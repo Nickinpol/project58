@@ -11,7 +11,7 @@ const defaultState = {
   workouts:{},
   cookDay:"today"
 };
-let state;
+let state,selectedDate=todayKey(),calendarYear=new Date().getFullYear();
 try { state = {...defaultState,...JSON.parse(localStorage.getItem("p58-state")||"{}")}; } catch { state={...defaultState}; }
 state.targets={...defaultState.targets,...(state.targets||{})};
 state.weight=state.weight||defaultState.weight; state.food=state.food||{}; state.water=state.water||{}; state.habits=state.habits||{}; state.workouts=state.workouts||{};
@@ -22,6 +22,12 @@ function waterMl(){return state.water[todayKey()]||0}
 function dateKeyOffset(offset){const d=new Date();d.setDate(d.getDate()+offset);return d.toISOString().slice(0,10)}
 function totalsFor(date){return (state.food[date]||[]).reduce((a,x)=>({k:a.k+x.kcal,p:a.p+x.p,c:a.c+x.c,f:a.f+x.f}),{k:0,p:0,c:0,f:0})}
 function shortDate(date){return new Date(date+"T12:00:00").toLocaleDateString("en-IN",{weekday:"short",day:"numeric"})}
+function dateFromKey(key){return new Date(key+"T12:00:00")}
+function keyFromDate(date){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,"0"),String(date.getDate()).padStart(2,"0")].join("-")}
+function shiftKey(key,days){const d=dateFromKey(key);d.setDate(d.getDate()+days);return keyFromDate(d)}
+function mondayKey(key){const d=dateFromKey(key),day=d.getDay()||7;d.setDate(d.getDate()-day+1);return keyFromDate(d)}
+function habitCount(date){return Object.values(state.habits[date]||{}).filter(Boolean).length}
+function hasDayData(date){return !!((state.food[date]||[]).length||(state.water[date]||0)||habitCount(date)||state.workouts[date])}
 function latestWeight(){return state.weight.length?state.weight[state.weight.length-1].value:null}
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1900)}
 const workouts=[
@@ -87,8 +93,20 @@ function renderProgress(){
  const cur=latestWeight();
  $("#currentWeight").textContent=cur===null?"—":cur.toFixed(1);$("#weightTrendHint").textContent=cur===null?"Add a private check-in when you are ready.":"Your latest private check-in.";
  $("#weightHistory").innerHTML=state.weight.slice().reverse().slice(0,12).map(x=>`<div class="history-row"><span>${new Date(x.date+"T12:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}</span><span>${x.value.toFixed(1)} kg</span></div>`).join("")||'<p class="muted">No check-ins yet.</p>';
- $("#weeklySummary").innerHTML=[-6,-5,-4,-3,-2,-1,0].map(offset=>{const date=dateKeyOffset(offset),t=totalsFor(date),h=Object.values(state.habits[date]||{}).filter(Boolean).length,done=!!state.workouts[date];return '<article class="day-summary '+(offset===0?'today':'')+'"><div><b>'+shortDate(date)+'</b><small>'+Math.round(t.k)+' kcal · '+Math.round(t.p)+'g protein</small></div><div class="summary-badges"><span>'+((state.water[date]||0)/1000).toFixed(1)+'L</span><span>'+h+'/3 habits</span><span class="'+(done?'done':'')+'">'+(done?'Workout ✓':'Workout —')+'</span></div></article>'}).join("");
+ renderHistory();
  $("#targetCalories").value=state.targets.calories;$("#targetProtein").value=state.targets.protein;$("#targetWater").value=state.targets.water;
+}
+function renderHistory(){
+ const selectedTotals=totalsFor(selectedDate),foods=state.food[selectedDate]||[],selected=dateFromKey(selectedDate);
+ $("#selectedDateTitle").textContent=selected.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ $("#selectedDateStats").textContent=Math.round(selectedTotals.k)+" kcal · "+Math.round(selectedTotals.p)+"g protein · "+((state.water[selectedDate]||0)/1000).toFixed(1)+"L water";
+ $("#selectedDayDetails").innerHTML='<div class="detail-pills"><span>'+habitCount(selectedDate)+'/3 habits</span><span class="'+(state.workouts[selectedDate]?'done':'')+'">'+(state.workouts[selectedDate]?'Workout completed':'No workout logged')+'</span></div>'+(foods.length?'<div class="day-food-list">'+foods.map(item=>'<div><b>'+esc(item.name)+'</b><span>'+Math.round(item.kcal)+' kcal · '+Math.round(item.p)+'g protein</span></div>').join("")+'</div>':'<p class="muted">No food logged for this day.</p>');
+ const start=mondayKey(selectedDate),week=Array.from({length:7},(_,i)=>shiftKey(start,i)),weekTotals=week.reduce((sum,date)=>{const t=totalsFor(date);sum.k+=t.k;sum.p+=t.p;sum.water+=state.water[date]||0;sum.habits+=habitCount(date);sum.workouts+=state.workouts[date]?1:0;return sum},{k:0,p:0,water:0,habits:0,workouts:0});
+ $("#weekRange").textContent=shortDate(week[0])+" – "+shortDate(week[6]);
+ $("#weekSummary").innerHTML='<article><b>'+Math.round(weekTotals.k/7)+' kcal</b><span>daily average</span></article><article><b>'+Math.round(weekTotals.p/7)+'g</b><span>protein average</span></article><article><b>'+weekTotals.workouts+'/7</b><span>workouts</span></article><article><b>'+weekTotals.habits+'/21</b><span>habits done</span></article><article><b>'+((weekTotals.water/7000)*100).toFixed(0)+'%</b><span>water target</span></article>';
+ $("#calendarYear").textContent=calendarYear;
+ const months=Array.from({length:12},(_,month)=>{const first=new Date(calendarYear,month,1),last=new Date(calendarYear,month+1,0),blanks=(first.getDay()+6)%7,days=Array.from({length:last.getDate()},(_,i)=>{const key=keyFromDate(new Date(calendarYear,month,i+1)),classes=['calendar-day'];if(key===todayKey())classes.push('today');if(key===selectedDate)classes.push('selected');if(hasDayData(key))classes.push('has-data');return '<button type="button" class="'+classes.join(' ')+'" data-date="'+key+'">'+(i+1)+'</button>'}).join("");return '<section class="month-card"><h3>'+first.toLocaleDateString("en-IN",{month:"long"})+'</h3><div class="weekday-row"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div><div class="month-grid"><i style="grid-column:span '+blanks+'"></i>'+days+'</div></section>'}).join("");
+ $("#yearCalendar").innerHTML=months;
 }
 function renderCook(){
  const todayMeals=mealIdeas.map(m=>`<div class="cook-meal"><b>${m[0]} · ${m[1]}</b><p>${m[2]}</p><span>${m[3]}</span></div>`).join("");
@@ -111,10 +129,16 @@ $("#mealList").addEventListener("click",e=>{const b=e.target.closest("[data-dele
 $("#quickFoods").addEventListener("click",e=>{const b=e.target.closest("[data-quick]");if(!b)return;const f=quickFoods[+b.dataset.quick];state.food[todayKey()]=[...dayFood(),{...f,id:Date.now()}];save();toast("Quick food added")});
 $("#workoutDays").addEventListener("click",e=>{const h=e.target.closest("[data-toggle]");if(h)h.parentElement.classList.toggle("open")});
 $("#completeWorkoutBtn").addEventListener("click",()=>{const key=todayKey();state.workouts[key]=!state.workouts[key];save();toast(state.workouts[key]?"Workout completed":"Workout marked incomplete")});
+$("#yearCalendar").addEventListener("click",e=>{const day=e.target.closest("[data-date]");if(!day)return;selectedDate=day.dataset.date;calendarYear=dateFromKey(selectedDate).getFullYear();renderProgress()});
+$("#prevYear").addEventListener("click",()=>{calendarYear--;renderHistory()});
+$("#nextYear").addEventListener("click",()=>{calendarYear++;renderHistory()});
+$("#previousDay").addEventListener("click",()=>{selectedDate=shiftKey(selectedDate,-1);calendarYear=dateFromKey(selectedDate).getFullYear();renderProgress()});
+$("#nextDay").addEventListener("click",()=>{selectedDate=shiftKey(selectedDate,1);calendarYear=dateFromKey(selectedDate).getFullYear();renderProgress()});
+$("#todayButton").addEventListener("click",()=>{selectedDate=todayKey();calendarYear=dateFromKey(selectedDate).getFullYear();renderProgress()});
 $("#weightForm").addEventListener("submit",e=>{e.preventDefault();const v=+$("#weightInput").value;if(v<30||v>150)return;state.weight.push({date:todayKey(),value:v});state.weight.sort((a,b)=>a.date.localeCompare(b.date));$("#weightInput").value="";save();toast("Weight check-in saved")});
 $("#settingsForm").addEventListener("submit",e=>{e.preventDefault();state.targets={calories:+$("#targetCalories").value,protein:+$("#targetProtein").value,water:+$("#targetWater").value};save();toast("Targets updated")});
 $$("[data-cookday]").forEach(b=>b.addEventListener("click",()=>{state.cookDay=b.dataset.cookday;$$("[data-cookday]").forEach(x=>x.classList.toggle("active",x===b));renderCook()}));
 let installPrompt;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("#installBtn").hidden=false});
 $("#installBtn").addEventListener("click",async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$("#installBtn").hidden=true});
-if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js?v=2").catch(()=>{});
+if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js?v=3").catch(()=>{});
 renderAll();

@@ -78,8 +78,12 @@
       <section class="view" id="view-progress">
         <div class="page-heading"><p class="eyebrow">THE LONG GAME</p><h1>Progress, <em>not pressure.</em></h1><p>Track the trend, not one day's number.</p></div>
         <div class="goal-card"><div><span class="eyebrow">YOUR WEIGHT TREND</span><strong><span id="currentWeight">—</span><small> kg</small></strong><p id="weightTrendHint">Add a private check-in when you are ready.</p></div></div>
-        <div class="section-heading"><div><p class="eyebrow">WEEKLY REVIEW</p><h2>Last 7 days</h2></div></div>
-        <div id="weeklySummary" class="weekly-summary"></div>
+        <div class="section-heading"><div><p class="eyebrow">HISTORY</p><h2>Your calendar</h2></div><div class="year-controls"><button class="icon-btn" id="prevYear" aria-label="Previous year">‹</button><b id="calendarYear"></b><button class="icon-btn" id="nextYear" aria-label="Next year">›</button></div></div>
+        <div id="yearCalendar" class="year-calendar"></div>
+        <div class="section-heading"><div><p class="eyebrow">DAY DETAIL</p><h2 id="selectedDateTitle">Today</h2></div><div class="day-controls"><button class="text-btn" id="previousDay">←</button><button class="text-btn" id="todayButton">Today</button><button class="text-btn" id="nextDay">→</button></div></div>
+        <div class="selected-day-card"><b id="selectedDateStats"></b><div id="selectedDayDetails"></div></div>
+        <div class="section-heading"><div><p class="eyebrow">WEEKLY ANALYSIS</p><h2>Week review</h2><span class="muted" id="weekRange"></span></div></div>
+        <div id="weekSummary" class="week-summary"></div>
         <div class="section-heading"><div><p class="eyebrow">CHECK-INS</p><h2>Log your weight</h2></div></div>
         <form id="weightForm" class="inline-form"><label><span>Weight (kg)</span><input id="weightInput" type="number" step="0.1" min="30" max="150" placeholder="e.g. 48.7" required></label><button class="primary-btn">Save check-in</button></form>
         <div class="history-card"><div class="history-head"><b>Recent entries</b><span class="muted">Morning, after bathroom</span></div><div id="weightHistory"></div></div>
@@ -120,6 +124,6 @@
     </form>
   </dialog>
   <div class="toast" id="toast" role="status"></div>
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
