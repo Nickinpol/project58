@@ -109,5 +109,5 @@ $("#settingsForm").addEventListener("submit",e=>{e.preventDefault();state.target
 $$("[data-cookday]").forEach(b=>b.addEventListener("click",()=>{state.cookDay=b.dataset.cookday;$$("[data-cookday]").forEach(x=>x.classList.toggle("active",x===b));renderCook()}));
 let installPrompt;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("#installBtn").hidden=false});
 $("#installBtn").addEventListener("click",async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$("#installBtn").hidden=true});
-if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js?v=2").catch(()=>{});
 renderAll();
