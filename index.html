@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101512">
+  <meta name="description" content="Project 58 — your strength, nutrition and progress companion.">
+  <title>Project 58</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Project 58 home">
+        <span class="brand-mark">58</span>
+        <span><b>PROJECT 58</b><small>BUILD WITH INTENTION</small></span>
+      </a>
+      <div class="top-actions">
+        <span class="date-chip" id="todayDate"></span>
+        <button class="icon-btn" id="installBtn" hidden aria-label="Install app">↓</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="view active" id="view-home">
+        <div class="welcome-row">
+          <div><p class="eyebrow">YOUR DAILY CHECK-IN</p><h1>Small steps.<br><em>Stronger you.</em></h1></div>
+          <div class="streak-badge"><span>PROJECT</span><strong>58</strong><small>KG GOAL</small></div>
+        </div>
+        <div class="hero-card">
+          <div class="hero-copy"><span class="eyebrow">TODAY'S FOCUS</span><h2 id="focusTitle">Fuel up. Show up.</h2><p id="focusText">Consistency beats perfection. Log your meals, move with intent, and keep going.</p></div>
+          <div class="hero-orbit"><span>58</span><small>GOAL KG</small></div>
+        </div>
+
+        <div class="section-heading"><div><p class="eyebrow">AT A GLANCE</p><h2>Today's progress</h2></div><span class="live-pill"><i></i> LIVE</span></div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span>Calories</span><span class="stat-icon">✦</span></div><strong id="caloriesValue">0 <small>/ 2,200</small></strong><div class="progress-track"><span id="caloriesBar"></span></div><small class="muted" id="caloriesHint">0% of daily target</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Protein</span><span class="stat-icon">◈</span></div><strong id="proteinValue">0 <small>/ 100g</small></strong><div class="progress-track"><span id="proteinBar"></span></div><small class="muted" id="proteinHint">Build and recover</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Water</span><span class="stat-icon">⌁</span></div><strong id="waterValue">0 <small>/ 2.2L</small></strong><div class="progress-track"><span id="waterBar"></span></div><div class="water-actions"><button class="mini-btn" data-water="250">+250 ml</button><button class="mini-btn" data-water="500">+500 ml</button></div></article>
+          <article class="stat-card"><div class="stat-top"><span>Weight</span><span class="stat-icon">↗</span></div><strong id="weightValue">48.5 <small>kg</small></strong><small class="muted">Latest check-in</small><button class="text-btn" data-go="progress">Update weight →</button></article>
+        </div>
+
+        <div class="section-heading"><div><p class="eyebrow">YOUR PLAN</p><h2>Today's rhythm</h2></div><button class="text-btn" data-go="train">Training plan →</button></div>
+        <div class="rhythm-card" id="todayWorkout"></div>
+        <div class="section-heading"><div><p class="eyebrow">DON'T MISS</p><h2>Daily essentials</h2></div></div>
+        <div class="checklist-card">
+          <label><input type="checkbox" data-habit="breakfast"><span><b>Eat a proper breakfast</b><small>Start with energy, not an empty tank.</small></span></label>
+          <label><input type="checkbox" data-habit="movement"><span><b>Complete today's movement</b><small>Train or take a recovery walk.</small></span></label>
+          <label><input type="checkbox" data-habit="sleep"><span><b>Protect your sleep window</b><small>Aim for a consistent 8 hours.</small></span></label>
+        </div>
+        <p class="fine-print">Targets are starting estimates. Review your 7-day weight trend and adjust gradually.</p>
+      </section>
+
+      <section class="view" id="view-food">
+        <div class="page-heading"><p class="eyebrow">NUTRITION</p><h1>Fuel your <em>growth.</em></h1><p>Eat consistently. Track honestly. Let the trend guide you.</p></div>
+        <div class="food-summary">
+          <div><span class="eyebrow">TODAY'S INTAKE</span><strong id="foodCalories">0 <small>kcal</small></strong><span class="muted">of 2,200 kcal target</span></div>
+          <div class="macro-pills"><span id="foodProtein">P 0g</span><span id="foodCarbs">C 0g</span><span id="foodFat">F 0g</span></div>
+        </div>
+        <div class="section-heading"><div><p class="eyebrow">FOOD DIARY</p><h2>Meals today</h2></div><button class="primary-btn compact" id="addFoodBtn">＋ Add food</button></div>
+        <div class="meal-list" id="mealList"></div>
+        <div class="section-heading"><div><p class="eyebrow">EASY STARTERS</p><h2>Quick add</h2></div></div>
+        <div class="quick-food-grid" id="quickFoods"></div>
+        <div class="note-card"><b>Make tracking useful</b><p>Weigh calorie-dense ingredients like oil, ghee, peanut butter, oats and atta. Log cooked portions consistently and use packet labels when available. Estimates are not lab measurements.</p></div>
+      </section>
+
+      <section class="view" id="view-train">
+        <div class="page-heading"><p class="eyebrow">TRAINING</p><h1>Earn your <em>strength.</em></h1><p>Five planned sessions, with recovery built in. Keep 1–3 good reps in reserve.</p></div>
+        <div class="training-banner"><div><span class="eyebrow">WEEKLY SPLIT</span><strong>5 sessions</strong><small>Start light. Progress with control.</small></div><div class="banner-number">05<span>/WK</span></div></div>
+        <div class="section-heading"><div><p class="eyebrow">YOUR ROUTINE</p><h2>Training schedule</h2></div></div>
+        <div id="workoutDays" class="workout-days"></div>
+        <div class="note-card"><b>Progression rule</b><p>When you can complete the top of the rep range on every set with clean form, add a little weight or use a harder variation next time. Stop for sharp pain. If you're new again, do 2 sets per exercise for the first 1–2 weeks.</p></div>
+      </section>
+
+      <section class="view" id="view-progress">
+        <div class="page-heading"><p class="eyebrow">THE LONG GAME</p><h1>Progress, <em>not pressure.</em></h1><p>Track the trend, not one day's number.</p></div>
+        <div class="goal-card"><div><span class="eyebrow">YOUR WEIGHT JOURNEY</span><strong><span id="currentWeight">48.5</span><small> kg</small></strong><p><span id="remainingWeight">9.5 kg</span> to your 58 kg goal</p></div><div class="goal-ring"><span id="goalPercent">0%</span><small>OF THE WAY</small></div></div>
+        <div class="section-heading"><div><p class="eyebrow">CHECK-INS</p><h2>Log your weight</h2></div></div>
+        <form id="weightForm" class="inline-form"><label><span>Weight (kg)</span><input id="weightInput" type="number" step="0.1" min="30" max="150" placeholder="e.g. 48.7" required></label><button class="primary-btn">Save check-in</button></form>
+        <div class="history-card"><div class="history-head"><b>Recent entries</b><span class="muted">Morning, after bathroom</span></div><div id="weightHistory"></div></div>
+        <div class="section-heading"><div><p class="eyebrow">YOUR BASELINE</p><h2>Targets & settings</h2></div></div>
+        <form id="settingsForm" class="settings-card">
+          <label>Daily calories <input id="targetCalories" type="number" min="1200" max="5000" step="50"></label>
+          <label>Protein target (g) <input id="targetProtein" type="number" min="40" max="250" step="5"></label>
+          <label>Water target (litres) <input id="targetWater" type="number" min="1" max="6" step="0.1"></label>
+          <button class="primary-btn">Save targets</button>
+        </form>
+        <p class="fine-print">Initial settings: 2,200 kcal, 100g protein and 2.2L fluids. These are starting points, not medical prescriptions. Reassess after 2–3 weeks of accurate logging and weekly average weights.</p>
+      </section>
+
+      <section class="view" id="view-cook">
+        <div class="page-heading"><p class="eyebrow">SHARED KITCHEN</p><h1>Cook with <em>clarity.</em></h1><p>A simple guide to what to prepare, how much, and how.</p></div>
+        <div class="cook-switch"><button class="active" data-cookday="today">Today</button><button data-cookday="week">Meal ideas</button></div>
+        <div id="cookContent"></div>
+        <div class="note-card"><b>Kitchen notes</b><p>Use the quantities as a starting serving for one person. Adjust spices and vegetables to taste. Count cooking oil separately in your food log; even a small unmeasured pour can change calories significantly.</p></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <button class="nav-item active" data-view="home"><span>⌂</span><small>Today</small></button>
+      <button class="nav-item" data-view="food"><span>◉</span><small>Food</small></button>
+      <button class="nav-item" data-view="train"><span>✳</span><small>Train</small></button>
+      <button class="nav-item" data-view="progress"><span>↗</span><small>Progress</small></button>
+      <button class="nav-item" data-view="cook"><span>▤</span><small>Cook</small></button>
+    </nav>
+  </div>
+
+  <dialog id="foodDialog">
+    <form method="dialog" id="foodForm" class="dialog-card">
+      <div class="dialog-head"><div><p class="eyebrow">FOOD DIARY</p><h2>Add food</h2></div><button class="icon-btn close-dialog" aria-label="Close">×</button></div>
+      <label>Food / meal name<input id="foodName" maxlength="70" placeholder="e.g. Paneer bhurji with roti" required></label>
+      <div class="form-grid"><label>Calories (kcal)<input id="foodKcal" type="number" min="0" max="3000" required></label><label>Protein (g)<input id="foodP" type="number" min="0" max="200" step="0.1" value="0"></label><label>Carbs (g)<input id="foodC" type="number" min="0" max="300" step="0.1" value="0"></label><label>Fat (g)<input id="foodF" type="number" min="0" max="200" step="0.1" value="0"></label></div>
+      <label>Meal<select id="foodMeal"><option>Breakfast</option><option>Lunch</option><option>Snack</option><option>Dinner</option></select></label>
+      <button class="primary-btn full">Add to diary</button>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
