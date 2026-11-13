@@ -8,16 +8,20 @@ const defaultState = {
   food:{},
   water:{},
   habits:{},
+  workouts:{},
   cookDay:"today"
 };
 let state;
 try { state = {...defaultState,...JSON.parse(localStorage.getItem("p58-state")||"{}")}; } catch { state={...defaultState}; }
 state.targets={...defaultState.targets,...(state.targets||{})};
-state.weight=state.weight||defaultState.weight; state.food=state.food||{}; state.water=state.water||{}; state.habits=state.habits||{};
+state.weight=state.weight||defaultState.weight; state.food=state.food||{}; state.water=state.water||{}; state.habits=state.habits||{}; state.workouts=state.workouts||{};
 function save(){localStorage.setItem("p58-state",JSON.stringify(state));renderAll()}
 function dayFood(){return state.food[todayKey()]||[]}
 function totals(){return dayFood().reduce((a,x)=>({k:a.k+x.kcal,p:a.p+x.p,c:a.c+x.c,f:a.f+x.f}),{k:0,p:0,c:0,f:0})}
 function waterMl(){return state.water[todayKey()]||0}
+function dateKeyOffset(offset){const d=new Date();d.setDate(d.getDate()+offset);return d.toISOString().slice(0,10)}
+function totalsFor(date){return (state.food[date]||[]).reduce((a,x)=>({k:a.k+x.kcal,p:a.p+x.p,c:a.c+x.c,f:a.f+x.f}),{k:0,p:0,c:0,f:0})}
+function shortDate(date){return new Date(date+"T12:00:00").toLocaleDateString("en-IN",{weekday:"short",day:"numeric"})}
 function latestWeight(){return state.weight.length?state.weight[state.weight.length-1].value:null}
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1900)}
 const workouts=[
@@ -83,6 +87,7 @@ function renderProgress(){
  const cur=latestWeight();
  $("#currentWeight").textContent=cur===null?"—":cur.toFixed(1);$("#weightTrendHint").textContent=cur===null?"Add a private check-in when you are ready.":"Your latest private check-in.";
  $("#weightHistory").innerHTML=state.weight.slice().reverse().slice(0,12).map(x=>`<div class="history-row"><span>${new Date(x.date+"T12:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}</span><span>${x.value.toFixed(1)} kg</span></div>`).join("")||'<p class="muted">No check-ins yet.</p>';
+ $("#weeklySummary").innerHTML=[-6,-5,-4,-3,-2,-1,0].map(offset=>{const date=dateKeyOffset(offset),t=totalsFor(date),h=Object.values(state.habits[date]||{}).filter(Boolean).length,done=!!state.workouts[date];return '<article class="day-summary '+(offset===0?'today':'')+'"><div><b>'+shortDate(date)+'</b><small>'+Math.round(t.k)+' kcal · '+Math.round(t.p)+'g protein</small></div><div class="summary-badges"><span>'+((state.water[date]||0)/1000).toFixed(1)+'L</span><span>'+h+'/3 habits</span><span class="'+(done?'done':'')+'">'+(done?'Workout ✓':'Workout —')+'</span></div></article>'}).join("");
  $("#targetCalories").value=state.targets.calories;$("#targetProtein").value=state.targets.protein;$("#targetWater").value=state.targets.water;
 }
 function renderCook(){
@@ -90,7 +95,8 @@ function renderCook(){
  const week=weekIdeas.map(d=>`<div class="cook-day"><h3>${d[0]}</h3><div class="cook-meal"><b>Breakfast</b><p>${d[1]}</p></div><div class="cook-meal"><b>Lunch</b><p>${d[2]}</p></div><div class="cook-meal"><b>Dinner</b><p>${d[3]}</p></div></div>`).join("");
  $("#cookContent").innerHTML=state.cookDay==="today"?'<div class="cook-day"><h3>Suggested day</h3>'+todayMeals+'</div>':week;
 }
-function renderAll(){renderHome();renderFood();renderTrain();renderProgress();renderCook()}
+function renderWorkoutTracking(){const done=!!state.workouts[todayKey()];$("#workoutStatus").textContent=done?"Completed today":"Not logged yet";$("#completeWorkoutBtn").textContent=done?"✓ Workout completed":"Mark workout complete"}
+function renderAll(){renderHome();renderWorkoutTracking();renderFood();renderTrain();renderProgress();renderCook()}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function go(view){$$(".view").forEach(v=>v.classList.toggle("active",v.id==="view-"+view));$$(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.view===view));window.scrollTo({top:0,behavior:"smooth"})}
 $$(".nav-item").forEach(b=>b.addEventListener("click",()=>go(b.dataset.view)));
@@ -104,6 +110,7 @@ $("#foodList");
 $("#mealList").addEventListener("click",e=>{const b=e.target.closest("[data-delete]");if(!b)return;state.food[todayKey()]=dayFood().filter(x=>String(x.id)!==b.dataset.delete);save();toast("Entry removed")});
 $("#quickFoods").addEventListener("click",e=>{const b=e.target.closest("[data-quick]");if(!b)return;const f=quickFoods[+b.dataset.quick];state.food[todayKey()]=[...dayFood(),{...f,id:Date.now()}];save();toast("Quick food added")});
 $("#workoutDays").addEventListener("click",e=>{const h=e.target.closest("[data-toggle]");if(h)h.parentElement.classList.toggle("open")});
+$("#completeWorkoutBtn").addEventListener("click",()=>{const key=todayKey();state.workouts[key]=!state.workouts[key];save();toast(state.workouts[key]?"Workout completed":"Workout marked incomplete")});
 $("#weightForm").addEventListener("submit",e=>{e.preventDefault();const v=+$("#weightInput").value;if(v<30||v>150)return;state.weight.push({date:todayKey(),value:v});state.weight.sort((a,b)=>a.date.localeCompare(b.date));$("#weightInput").value="";save();toast("Weight check-in saved")});
 $("#settingsForm").addEventListener("submit",e=>{e.preventDefault();state.targets={calories:+$("#targetCalories").value,protein:+$("#targetProtein").value,water:+$("#targetWater").value};save();toast("Targets updated")});
 $$("[data-cookday]").forEach(b=>b.addEventListener("click",()=>{state.cookDay=b.dataset.cookday;$$("[data-cookday]").forEach(x=>x.classList.toggle("active",x===b));renderCook()}));

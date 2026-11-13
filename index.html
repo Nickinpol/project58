@@ -44,6 +44,7 @@
 
         <div class="section-heading"><div><p class="eyebrow">YOUR PLAN</p><h2>Today's rhythm</h2></div><button class="text-btn" data-go="train">Training plan →</button></div>
         <div class="rhythm-card" id="todayWorkout"></div>
+        <div class="completion-card"><div><b id="workoutStatus">Not logged yet</b><small>Your completed workouts appear in weekly progress.</small></div><button class="primary-btn compact" id="completeWorkoutBtn">Mark workout complete</button></div>
         <div class="section-heading"><div><p class="eyebrow">DON'T MISS</p><h2>Daily essentials</h2></div></div>
         <div class="checklist-card">
           <label><input type="checkbox" data-habit="breakfast"><span><b>Eat a proper breakfast</b><small>Start with energy, not an empty tank.</small></span></label>
@@ -77,6 +78,8 @@
       <section class="view" id="view-progress">
         <div class="page-heading"><p class="eyebrow">THE LONG GAME</p><h1>Progress, <em>not pressure.</em></h1><p>Track the trend, not one day's number.</p></div>
         <div class="goal-card"><div><span class="eyebrow">YOUR WEIGHT TREND</span><strong><span id="currentWeight">—</span><small> kg</small></strong><p id="weightTrendHint">Add a private check-in when you are ready.</p></div></div>
+        <div class="section-heading"><div><p class="eyebrow">WEEKLY REVIEW</p><h2>Last 7 days</h2></div></div>
+        <div id="weeklySummary" class="weekly-summary"></div>
         <div class="section-heading"><div><p class="eyebrow">CHECK-INS</p><h2>Log your weight</h2></div></div>
         <form id="weightForm" class="inline-form"><label><span>Weight (kg)</span><input id="weightInput" type="number" step="0.1" min="30" max="150" placeholder="e.g. 48.7" required></label><button class="primary-btn">Save check-in</button></form>
         <div class="history-card"><div class="history-head"><b>Recent entries</b><span class="muted">Morning, after bathroom</span></div><div id="weightHistory"></div></div>
