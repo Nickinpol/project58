@@ -31,11 +31,8 @@ Alternative: drag the folder into a static host such as Netlify Drop. Hosting pr
 - The training plan assumes adjustable dumbbells and bands for some movements. Use bodyweight alternatives until equipment is available, begin with 2 sets, and progress gradually.
 - This is a planning and tracking tool, not medical advice.
 
-## Personal starting settings
-- Starting body weight: 48.5 kg
-- Goal weight: 58 kg
-- Starting intake target: 2,200 kcal/day
-- Protein target: 100 g/day
-- Fluid target: 2.2 L/day
-
-Review the average of several morning weigh-ins over 2–3 weeks before changing calorie intake. Given the reported low body weight, fatigue, vitamin deficiencies and high LDL, keep clinician follow-up and prescribed treatment in the loop.
+## Privacy-friendly defaults
+- The public code contains no personal body weight, goal weight, medical details, or personal nutrition targets.
+- New installs start with generic, editable targets and no recorded weight.
+- Your food diary, water, habits, and weight check-ins stay in that device's local browser storage unless you later choose to add an export or sync feature.
+- This app is for planning and tracking, not medical advice. Discuss health concerns with a qualified clinician.

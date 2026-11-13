@@ -27,19 +27,19 @@
       <section class="view active" id="view-home">
         <div class="welcome-row">
           <div><p class="eyebrow">YOUR DAILY CHECK-IN</p><h1>Small steps.<br><em>Stronger you.</em></h1></div>
-          <div class="streak-badge"><span>PROJECT</span><strong>58</strong><small>KG GOAL</small></div>
+          <div class="streak-badge"><span>PROJECT</span><strong>58</strong><small>DAILY SYSTEM</small></div>
         </div>
         <div class="hero-card">
           <div class="hero-copy"><span class="eyebrow">TODAY'S FOCUS</span><h2 id="focusTitle">Fuel up. Show up.</h2><p id="focusText">Consistency beats perfection. Log your meals, move with intent, and keep going.</p></div>
-          <div class="hero-orbit"><span>58</span><small>GOAL KG</small></div>
+          <div class="hero-orbit"><span>58</span><small>MOVE · FUEL · REST</small></div>
         </div>
 
         <div class="section-heading"><div><p class="eyebrow">AT A GLANCE</p><h2>Today's progress</h2></div><span class="live-pill"><i></i> LIVE</span></div>
         <div class="stats-grid">
-          <article class="stat-card"><div class="stat-top"><span>Calories</span><span class="stat-icon">✦</span></div><strong id="caloriesValue">0 <small>/ 2,200</small></strong><div class="progress-track"><span id="caloriesBar"></span></div><small class="muted" id="caloriesHint">0% of daily target</small></article>
-          <article class="stat-card"><div class="stat-top"><span>Protein</span><span class="stat-icon">◈</span></div><strong id="proteinValue">0 <small>/ 100g</small></strong><div class="progress-track"><span id="proteinBar"></span></div><small class="muted" id="proteinHint">Build and recover</small></article>
-          <article class="stat-card"><div class="stat-top"><span>Water</span><span class="stat-icon">⌁</span></div><strong id="waterValue">0 <small>/ 2.2L</small></strong><div class="progress-track"><span id="waterBar"></span></div><div class="water-actions"><button class="mini-btn" data-water="250">+250 ml</button><button class="mini-btn" data-water="500">+500 ml</button></div></article>
-          <article class="stat-card"><div class="stat-top"><span>Weight</span><span class="stat-icon">↗</span></div><strong id="weightValue">48.5 <small>kg</small></strong><small class="muted">Latest check-in</small><button class="text-btn" data-go="progress">Update weight →</button></article>
+          <article class="stat-card"><div class="stat-top"><span>Calories</span><span class="stat-icon">✦</span></div><strong id="caloriesValue">0 <small>/ —</small></strong><div class="progress-track"><span id="caloriesBar"></span></div><small class="muted" id="caloriesHint">0% of daily target</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Protein</span><span class="stat-icon">◈</span></div><strong id="proteinValue">0 <small>/ —</small></strong><div class="progress-track"><span id="proteinBar"></span></div><small class="muted" id="proteinHint">Build and recover</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Water</span><span class="stat-icon">⌁</span></div><strong id="waterValue">0 <small>/ —</small></strong><div class="progress-track"><span id="waterBar"></span></div><div class="water-actions"><button class="mini-btn" data-water="250">+250 ml</button><button class="mini-btn" data-water="500">+500 ml</button></div></article>
+          <article class="stat-card"><div class="stat-top"><span>Weight</span><span class="stat-icon">↗</span></div><strong id="weightValue">— <small>kg</small></strong><small class="muted">Latest check-in</small><button class="text-btn" data-go="progress">Update weight →</button></article>
         </div>
 
         <div class="section-heading"><div><p class="eyebrow">YOUR PLAN</p><h2>Today's rhythm</h2></div><button class="text-btn" data-go="train">Training plan →</button></div>
@@ -56,7 +56,7 @@
       <section class="view" id="view-food">
         <div class="page-heading"><p class="eyebrow">NUTRITION</p><h1>Fuel your <em>growth.</em></h1><p>Eat consistently. Track honestly. Let the trend guide you.</p></div>
         <div class="food-summary">
-          <div><span class="eyebrow">TODAY'S INTAKE</span><strong id="foodCalories">0 <small>kcal</small></strong><span class="muted">of 2,200 kcal target</span></div>
+          <div><span class="eyebrow">TODAY'S INTAKE</span><strong id="foodCalories">0 <small>kcal</small></strong><span class="muted" id="foodTargetHint">of your daily target</span></div>
           <div class="macro-pills"><span id="foodProtein">P 0g</span><span id="foodCarbs">C 0g</span><span id="foodFat">F 0g</span></div>
         </div>
         <div class="section-heading"><div><p class="eyebrow">FOOD DIARY</p><h2>Meals today</h2></div><button class="primary-btn compact" id="addFoodBtn">＋ Add food</button></div>
@@ -76,7 +76,7 @@
 
       <section class="view" id="view-progress">
         <div class="page-heading"><p class="eyebrow">THE LONG GAME</p><h1>Progress, <em>not pressure.</em></h1><p>Track the trend, not one day's number.</p></div>
-        <div class="goal-card"><div><span class="eyebrow">YOUR WEIGHT JOURNEY</span><strong><span id="currentWeight">48.5</span><small> kg</small></strong><p><span id="remainingWeight">9.5 kg</span> to your 58 kg goal</p></div><div class="goal-ring"><span id="goalPercent">0%</span><small>OF THE WAY</small></div></div>
+        <div class="goal-card"><div><span class="eyebrow">YOUR WEIGHT TREND</span><strong><span id="currentWeight">—</span><small> kg</small></strong><p id="weightTrendHint">Add a private check-in when you are ready.</p></div></div>
         <div class="section-heading"><div><p class="eyebrow">CHECK-INS</p><h2>Log your weight</h2></div></div>
         <form id="weightForm" class="inline-form"><label><span>Weight (kg)</span><input id="weightInput" type="number" step="0.1" min="30" max="150" placeholder="e.g. 48.7" required></label><button class="primary-btn">Save check-in</button></form>
         <div class="history-card"><div class="history-head"><b>Recent entries</b><span class="muted">Morning, after bathroom</span></div><div id="weightHistory"></div></div>
@@ -87,7 +87,7 @@
           <label>Water target (litres) <input id="targetWater" type="number" min="1" max="6" step="0.1"></label>
           <button class="primary-btn">Save targets</button>
         </form>
-        <p class="fine-print">Initial settings: 2,200 kcal, 100g protein and 2.2L fluids. These are starting points, not medical prescriptions. Reassess after 2–3 weeks of accurate logging and weekly average weights.</p>
+        <p class="fine-print">Targets are editable starting points, stored only on this device. They are not medical prescriptions. Review trends over time and discuss health concerns with a qualified clinician.</p>
       </section>
 
       <section class="view" id="view-cook">

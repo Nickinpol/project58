@@ -2,8 +2,9 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const todayKey = () => new Date().toISOString().slice(0,10);
 const defaultState = {
-  targets:{calories:2200,protein:100,water:2.2},
-  weight:[{date:todayKey(),value:48.5}],
+  // Generic, editable starter targets. Personal values live only in this device's local storage.
+  targets:{calories:2000,protein:75,water:2.0},
+  weight:[],
   food:{},
   water:{},
   habits:{},
@@ -17,7 +18,7 @@ function save(){localStorage.setItem("p58-state",JSON.stringify(state));renderAl
 function dayFood(){return state.food[todayKey()]||[]}
 function totals(){return dayFood().reduce((a,x)=>({k:a.k+x.kcal,p:a.p+x.p,c:a.c+x.c,f:a.f+x.f}),{k:0,p:0,c:0,f:0})}
 function waterMl(){return state.water[todayKey()]||0}
-function latestWeight(){return state.weight.length?state.weight[state.weight.length-1].value:48.5}
+function latestWeight(){return state.weight.length?state.weight[state.weight.length-1].value:null}
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1900)}
 const workouts=[
  {day:"Monday",name:"Chest · Shoulders · Triceps",type:"UPPER PUSH",items:[["Push-ups","3 × 8–15"],["Dumbbell floor press","3 × 8–12"],["Dumbbell shoulder press","3 × 8–12"],["Dumbbell lateral raise","3 × 12–20"],["Overhead triceps extension","2 × 10–15"]]},
@@ -59,7 +60,8 @@ function renderHome(){
  $("#caloriesValue").innerHTML=`${Math.round(t.k)} <small>/ ${target.calories.toLocaleString("en-IN")}</small>`;
  $("#proteinValue").innerHTML=`${Math.round(t.p)}g <small>/ ${target.protein}g</small>`;
  $("#waterValue").innerHTML=`${(waterMl()/1000).toFixed(2)} <small>/ ${target.water.toFixed(1)}L</small>`;
- $("#weightValue").innerHTML=`${latestWeight().toFixed(1)} <small>kg</small>`;
+ const weight=latestWeight();
+ $("#weightValue").innerHTML=weight===null?'— <small>kg</small>':weight.toFixed(1)+' <small>kg</small>';
  [["caloriesBar",t.k/target.calories],["proteinBar",t.p/target.protein],["waterBar",waterMl()/(target.water*1000)]].forEach(([id,v])=>$("#"+id).style.width=Math.min(100,v*100)+"%");
  $("#caloriesHint").textContent=`${Math.round(t.k/target.calories*100)}% of daily target`;
  $("#proteinHint").textContent=t.p>=target.protein?"Target reached — nice work.":"Build and recover";
@@ -68,7 +70,7 @@ function renderHome(){
  $$(".checklist-card input").forEach(i=>i.checked=!!(state.habits[todayKey()]||{})[i.dataset.habit]);
 }
 function renderFood(){
- const t=totals(); $("#foodCalories").innerHTML=`${Math.round(t.k).toLocaleString("en-IN")} <small>kcal</small>`;
+ const t=totals(); $("#foodCalories").innerHTML=Math.round(t.k).toLocaleString("en-IN")+' <small>kcal</small>';$("#foodTargetHint").textContent='of '+state.targets.calories.toLocaleString("en-IN")+' kcal target';
  $("#foodProtein").textContent=`P ${Math.round(t.p)}g`;$("#foodCarbs").textContent=`C ${Math.round(t.c)}g`;$("#foodFat").textContent=`F ${Math.round(t.f)}g`;
  const groups=["Breakfast","Lunch","Snack","Dinner"];
  $("#mealList").innerHTML=groups.map(g=>{const items=dayFood().filter(x=>x.meal===g);const sum=items.reduce((a,x)=>a+x.kcal,0);return `<div class="meal-group"><div class="meal-group-head"><b>${g}</b><span>${Math.round(sum)} kcal</span></div>${items.length?items.map(x=>`<div class="food-entry"><div><b>${esc(x.name)}</b><small>${Math.round(x.p)}g protein · ${Math.round(x.c)}g carbs · ${Math.round(x.f)}g fat</small></div><strong>${Math.round(x.kcal)} kcal <button class="delete-food" data-delete="${x.id}" aria-label="Delete ${esc(x.name)}">×</button></strong></div>`).join(""):'<small class="muted">Nothing logged yet.</small>'}</div>`}).join("");
@@ -78,15 +80,15 @@ function renderTrain(){
  $("#workoutDays").innerHTML=workouts.map((w,i)=>`<article class="day-card ${i===new Date().getDay()-1?"open":""}"><div class="day-head" data-toggle="${i}"><div><b>${w.day} · ${w.name}</b><small>${w.items.length} movements · home-friendly</small></div><span class="day-label">${w.type}　⌄</span></div><div class="exercise-list">${w.items.map(x=>`<div class="exercise"><span>${x[0]}</span><span>${x[1]}</span></div>`).join("")}</div></article>`).join("");
 }
 function renderProgress(){
- const cur=latestWeight(), start=48.5, goal=58, pct=Math.max(0,Math.min(100,(cur-start)/(goal-start)*100));
- $("#currentWeight").textContent=cur.toFixed(1);$("#remainingWeight").textContent=Math.max(0,goal-cur).toFixed(1)+" kg";$("#goalPercent").textContent=Math.round(pct)+"%";
+ const cur=latestWeight();
+ $("#currentWeight").textContent=cur===null?"—":cur.toFixed(1);$("#weightTrendHint").textContent=cur===null?"Add a private check-in when you are ready.":"Your latest private check-in.";
  $("#weightHistory").innerHTML=state.weight.slice().reverse().slice(0,12).map(x=>`<div class="history-row"><span>${new Date(x.date+"T12:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}</span><span>${x.value.toFixed(1)} kg</span></div>`).join("")||'<p class="muted">No check-ins yet.</p>';
  $("#targetCalories").value=state.targets.calories;$("#targetProtein").value=state.targets.protein;$("#targetWater").value=state.targets.water;
 }
 function renderCook(){
  const todayMeals=mealIdeas.map(m=>`<div class="cook-meal"><b>${m[0]} · ${m[1]}</b><p>${m[2]}</p><span>${m[3]}</span></div>`).join("");
  const week=weekIdeas.map(d=>`<div class="cook-day"><h3>${d[0]}</h3><div class="cook-meal"><b>Breakfast</b><p>${d[1]}</p></div><div class="cook-meal"><b>Lunch</b><p>${d[2]}</p></div><div class="cook-meal"><b>Dinner</b><p>${d[3]}</p></div></div>`).join("");
- $("#cookContent").innerHTML=state.cookDay==="today"?`<div class="cook-day"><h3>Suggested day · approx. 2,100–2,200 kcal</h3>${todayMeals}</div>`:week;
+ $("#cookContent").innerHTML=state.cookDay==="today"?'<div class="cook-day"><h3>Suggested day</h3>'+todayMeals+'</div>':week;
 }
 function renderAll(){renderHome();renderFood();renderTrain();renderProgress();renderCook()}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
